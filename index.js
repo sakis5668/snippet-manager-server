@@ -11,8 +11,10 @@ const app = express();
 app.use(express.json());
 app.use(
   cors({
-    origin: ["http://localhost:3000", "http://snippet.rembetologio.gr"],
+    origin: ["http://localhost:3000", "https://snippet.rembetologio.gr"],
     credentials: true,
+    sameSite: process.env.NODE_ENV === "development" ? "lax" : "none",
+    secure: process.env.NODE_ENV === "development" ? false : true,
   })
 );
 app.use(cookieParser());
