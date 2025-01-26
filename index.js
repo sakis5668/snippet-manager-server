@@ -3,6 +3,8 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
+const https = require("https");
+const fs = require("fs");
 
 dotenv.config();
 
@@ -13,15 +15,21 @@ app.use(
   cors({
     origin: ["http://localhost:3000", "https://snippet.rembetologio.gr"],
     credentials: true,
-    sameSite: process.env.NODE_ENV === "development" ? "lax" : "none",
-    secure: process.env.NODE_ENV === "development" ? false : true,
   })
 );
 app.use(cookieParser());
 
 const PORT = process.env.PORT || 5001;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+
+// Load SSL certificate
+const sslOptions = {
+  key: fs.readFileSync("server.key"),
+  cert: fs.readFileSync("server.cert"),
+};
+
+// Create HTTPS server
+https.createServer(sslOptions, app).listen(PORT, () => {
+  console.log(`HTTPS Server is running on port ${PORT}`);
 });
 
 app.use("/snippet", require("./routers/snippetRouter"));
